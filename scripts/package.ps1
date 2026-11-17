@@ -19,8 +19,9 @@ $stagingRoot = Join-Path $artifactsRoot ('publish/staging-' + [Guid]::NewGuid().
 $installerRoot = if ($InstallerOutputDirectory) {
     if ([IO.Path]::IsPathRooted($InstallerOutputDirectory)) { [IO.Path]::GetFullPath($InstallerOutputDirectory) }
     else { [IO.Path]::GetFullPath((Join-Path $repositoryRoot $InstallerOutputDirectory)) }
-} else { Join-Path $artifactsRoot ('installer/' + $Version) }
+} else { Join-Path $repositoryRoot 'installer' }
 $installer = Join-Path $installerRoot 'ScreenshotTool-Setup-x64.exe'
+$stagedInstaller = Join-Path $stagingRoot 'ScreenshotTool-Setup-x64.exe'
 $buildRoot = Join-Path $artifactsRoot ('build/win-x64/' + $Version)
 
 function Remove-BuildDirectory {
@@ -95,18 +96,19 @@ try {
     Remove-BuildDirectory $publishRoot
     New-Item -ItemType Directory -Path (Split-Path -Parent $publishRoot) -Force | Out-Null
     Move-Item -LiteralPath $stagingRoot -Destination $publishRoot
-    if (Test-Path -LiteralPath $installer) { Remove-Item -LiteralPath $installer -Force }
+    New-Item -ItemType Directory -Path $stagingRoot -Force | Out-Null
 
     Write-Host 'Compiling the offline installer.'
-    $compilerOutput = & $IsccPath "/DAppVersion=$Version" "/DAppFileVersion=$fileVersion" "/DPublishDir=$publishRoot" "/DInstallerOutputDir=$installerRoot" $installerScript
+    $compilerOutput = & $IsccPath "/DAppVersion=$Version" "/DAppFileVersion=$fileVersion" "/DPublishDir=$publishRoot" "/DInstallerOutputDir=$stagingRoot" $installerScript
     $compilerExitCode = $LASTEXITCODE
     $compilerOutput | Set-Content -Encoding UTF8 -LiteralPath (Join-Path $installerRoot 'inno-compile.log')
     if ($compilerExitCode -ne 0) { throw "Inno Setup compilation failed (exit $compilerExitCode). See $installerRoot/inno-compile.log." }
     $compilerVersionLine = $compilerOutput | Select-String -Pattern 'Compiler engine version: Inno Setup ([0-9.]+)' | Select-Object -First 1
     $compilerVersion = if ($compilerVersionLine) { $compilerVersionLine.Matches[0].Groups[1].Value } else { 'unknown (see inno-compile.log)' }
-    if (-not (Test-Path -LiteralPath $installer) -or (Get-Item -LiteralPath $installer).Length -eq 0) {
-        throw "The compiler did not produce the expected installer: $installer"
+    if (-not (Test-Path -LiteralPath $stagedInstaller) -or (Get-Item -LiteralPath $stagedInstaller).Length -eq 0) {
+        throw "The compiler did not produce the expected installer: $stagedInstaller"
     }
+    Move-Item -LiteralPath $stagedInstaller -Destination $installer -Force
 
     $installerHash = (Get-FileHash -LiteralPath $installer -Algorithm SHA256).Hash.ToLowerInvariant()
     "$installerHash  ScreenshotTool-Setup-x64.exe" | Set-Content -Encoding ASCII -LiteralPath ($installer + '.sha256')

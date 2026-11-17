@@ -1,6 +1,11 @@
 .tools/
 .superpowers/
 artifacts/
+/installer/ScreenshotTool-Setup-x64.exe
+/installer/ScreenshotTool-Setup-x64.exe.sha256
+/installer/build-manifest.json
+/installer/dotnet-publish.log
+/installer/inno-compile.log
 **/bin/
 **/obj/
 *.user

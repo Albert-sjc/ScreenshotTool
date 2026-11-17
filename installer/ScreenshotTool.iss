@@ -9,7 +9,7 @@
   #define PublishDir "..\artifacts\publish\1.0.4\win-x64"
 #endif
 #ifndef InstallerOutputDir
-  #define InstallerOutputDir "..\artifacts\installer\1.0.4"
+  #define InstallerOutputDir "."
 #endif
 
 [Setup]

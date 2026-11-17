@@ -10,8 +10,7 @@
 - 回归覆盖另一箭头端点固定、边角跨越对边归一化、一次拖动一次撤销、无变化不增加历史、非零选区坐标、真实 Viewbox 缩小后的显示和命中、松手最终坐标、贴图草稿隔离、主体移动与连续绘图、导出无控制点。独立代码审查通过。
 - 已查看真实离屏 EditorView 效果图 `handles-preview.png`；未接管用户鼠标键盘。完整手动绘图交互及干净系统安装验收仍未执行。
 - 直接运行：`artifacts/publish/1.0.4/win-x64/ScreenshotTool.exe`，文件版本 `1.0.4.0`；SHA256 `74631d46d3be41eb11af023669d0d2b473c76cbec6e38aa027b1034f6df1f431`。
-- 免安装 ZIP：`artifacts/portable/ScreenshotTool-1.0.4-win-x64.zip`，`73,793,662` 字节；SHA256 `ba22bbf928d76b7ba0111a4b104318957ef9bffd14f3e02cc88c31e09595a3df`。472 个源文件加中文说明，共 473 个 ZIP 条目逐项校验通过。
-- 安装包：`artifacts/installer/1.0.4/ScreenshotTool-Setup-x64.exe`，`53,556,102` 字节；SHA256 `6bd91627ab91bfd6d3d63c255d8c6093816495ad2caad2adbf2bad1a6448f9d2`。自包含发布、Inno 编译及父代理核对清单哈希均通过。
+- 安装包：`installer/ScreenshotTool-Setup-x64.exe`，`53,556,102` 字节；SHA256 `6bd91627ab91bfd6d3d63c255d8c6093816495ad2caad2adbf2bad1a6448f9d2`。自包含发布、Inno 编译及父代理核对清单哈希均通过。
 - 1,445 个旧发行文件的逐文件 SHA256 全部保持一致，见 `previous-release-preservation.json`；未启动新版、关闭用户程序或执行安装。
 
 ## 1.0.3 历史发布
@@ -112,9 +111,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/bootstrap.ps1
 .\.tools\dotnet\dotnet.exe test --solution ScreenshotTool.slnx -c Release
 .\.tools\dotnet\dotnet.exe build ScreenshotTool.slnx -c Release
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1 -Configuration Release -Version 1.0.4
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-portable.ps1 -Version 1.0.4
-Get-FileHash artifacts/installer/1.0.4/ScreenshotTool-Setup-x64.exe -Algorithm SHA256
-Get-FileHash artifacts/portable/ScreenshotTool-1.0.4-win-x64.zip -Algorithm SHA256
+Get-FileHash installer/ScreenshotTool-Setup-x64.exe -Algorithm SHA256
 ```
 
 每次实测追加：日期、测试人、系统/屏幕与缩放、安装器版本/哈希、执行命令及退出码、已通过项、失败项/复现步骤、未执行项原因。自动生成的 `build-manifest.json` 与 `inno-compile.log` 随安装器保留。
