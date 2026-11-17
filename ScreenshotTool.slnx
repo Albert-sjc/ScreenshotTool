@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/ScreenshotTool/ScreenshotTool.csproj" />
+  <Project Path="tests/ScreenshotTool.Tests/ScreenshotTool.Tests.csproj" />
+</Solution>
